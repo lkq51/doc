@@ -1,0 +1,27 @@
+Java的类加载机制
+JVM类加载的一些基本知识
+类只有在被使用的时候才会被加载，使用包括以下几种情况：
+1.	New一个类的实例
+2.	调用该类中的静态方法
+3.	调用该类中的静态字段（但不包括final）
+4.	用relectbao中方法反射类的方法
+5.	初始化类会先初始化其父类
+6.	启动虚拟机时含有main方法的类
+
+每个类必须由同一个类加载器加载才能被认定为同一个类。（指equals、isAssignableFrom、isInstance、也包括instanceof）
+
+Jvm中默认有三个classLoader
+1.	BootStrapClassLoader 启动类加载器，java类最顶层的类加载器，负责JDK中核心类库，如：rt.jar resource.jar、charsets.jar等
+2.	Extension ClassLoader  负责加载JAVA_HOME/jre/lib/ext/目录下的所有jar
+3.	Application ClassLoader  负责加载应用程序classPath目录下的所有jar和class文件
+
+
+提到类加载，就避不开双亲委派机制。其实这个名字翻译的不太好，叫父亲委派也许更加恰当。双亲总有一种顶上继承了两个类的感觉，但实际并不是这样。每一个classLoader实例都用一个父类加载器的引用。（这里的父类不是指java 类继承的父类，而是指加载顺序上的父类）其中Bootstrap ClassLoader并没有父类加载器。每次加载class的时候，加载器就会让最顶层的Bootstrap ClassLoader去加载，如果不能加载的话，然后一层层往下。使用Bootstrap ClassLoader加载类有两种方式
+1.	在JVM添加-Xbootclasspath参数，指定Bootstrap ClassLoader的加载类路径，并且追加我们自己的jar
+2.	将class文件放置到JAVA_HOME/jre/classes/ 目录下
+
+
+类的热加载
+最简单实现热部署的方式就是将每一个Application都定义一个自己的ClassLoader。
+然后定义一个接口，一份配置文件。并且在启动的时候加载所有已知的用户自定义应用程序。
+接着需要一个监听器，来监听发布目录中的每个文件的变化。
